@@ -1,0 +1,3 @@
+[submodule "sphero_ros"]
+	path = sphero_ros
+	url = https://github.com/mmwise/sphero_ros.git
