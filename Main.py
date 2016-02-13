@@ -1,21 +1,25 @@
-from CoreLibrary import *
+import time
+from sphero import core
+from Camera import Camera
 
-spheroAtt = {"Cornered": ["Danger", "True", "False"],
-          "Near-Wall": bool,
-          "Near-Dog": bool,
-          "Near-Hiding": bool,
-          "Collision": bool,
-          "Caught": bool
-          "Action": Script,
-          "Location": (int,int),
-          "Gyroscope": (int,int,int),
-          "Accelerometer": (int,int,int),
-          "Motor": (int,int)}
+# Initialize Sphero
+s = core.Sphero("/dev/rfcomm0")
+s.connect()
 
-dogAtt = {"Dog-State": ["Laying-Down", "Standing", "Walking", "Running", "Jumping"],
-       "Dog-Behavior": ["Chasing", "Searching", "Alert", "Tired"]
-       "Location": (int,int),
-       "SpeedVector": (int,int)}
+# Initialize Camera
+CM1 = Camera(s)
 
-Sphero = Frame(spheroAtt)
-Dog = Frame(dogAtt)
+while True:
+
+    CM1.capture((40,40,40))
+
+    k = cv2.waitKey(5) & 0xFF
+    if k == 27:
+        break
+
+cv2.destroyAllWindows()
+
+#s.set_heading(0)
+#s.roll(speed,a)
+#s.get_rgb()
+#s.set_rgb
