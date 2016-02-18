@@ -5,6 +5,7 @@ import socket               # Import socket module
 import cv2, colorsys
 import numpy as np
 from matplotlib import pyplot as plt
+import time
 
 host = "192.168.0.108"
 portI, portO, vport = 23451, 12345, 8081
@@ -116,8 +117,9 @@ def testComm():
 
     i, o = getComm(host, portI, portO)
 
-    o.send("set_rgb, 100, 100, 0")
+    o.send("set_rgb, 200, 100, 0")
     print i.recv(1024)
+    time.sleep(100)
     o.close                     # Close the socket when done
     i.close
 
