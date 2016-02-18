@@ -117,8 +117,10 @@ def testComm():
 
     i, o = getComm(host, portI, portO)
 
-    o.send("set_rgb, 200, 100, 0")
-    print i.recv(1024)
+    o.send("set_rgb, 55, 75, 55")
+    print str(i.recv(1024))
+    o.send("get_rgb, 0, 0, 0")
+    print str(i.recv(1024))
     time.sleep(100)
     o.close                     # Close the socket when done
     i.close
