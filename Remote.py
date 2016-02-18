@@ -2,13 +2,14 @@
 
 import socket               # Import socket module
 from sphero import *
+import csv
 
 def getComm(host, port):
     i, o = socket.socket(), socket.socket()         # Create a socket object
     o.connect((host, port))
     print o.recv(1024)
 
-    i.connect(('', port))
+    i.bind(('', port))
     i.listen(5)
     c, addr = i.accept()
     print 'Got connection from', addr
@@ -34,9 +35,8 @@ Commands = {"get_rgb"    : lambda x,y,z: robot.get_rgb(),
 
 while True:                   # Runs forever
     cmd = i.recv(1024)   # Receive the command
-    v1  = i.recv(1024)   # Receive v1
-    v2  = i.recv(1024)   # Receive v2
-    v3  = i.recv(1024)   # Receive v3
+    cmd,v1,v2,v3 = csv.reader(cmd)
+    print(cmd,v1,v2,v3)
 
     Commands[cmd](v1,v2,v3)
     o.send("Done!")

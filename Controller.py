@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 host = "192.168.0.108"
-port, vport = 12345, 8081
+portI, portO, vport = 23451, 12345, 8081
 
 def getVideo(host, port):
     vhost = "http://"+host+":"+str(vport)+"/video?x.mjpeg"
@@ -16,11 +16,17 @@ def getVideo(host, port):
     print("Video Feed Established.")
     return cap
 
-def getComm(host, port):
-    s = socket.socket()         # Create a socket object
-    s.connect((host, port))
-    print s.recv(1024)
-    return s
+def getComm(host, portI, portO):
+    i, o = socket.socket(), socket.socket()         # Create a socket object
+    o.connect((host, portO))
+
+    i.bind(('', portI))
+    i.listen(5)
+    c, addr = i.accept()
+    print 'Got connection from', addr
+    c.send('Thank you for connecting')
+
+    return c, o
 
 def filter(frame,color,colorRange):
     # Get color
@@ -108,17 +114,11 @@ def testFilter():
 
 def testComm():
 
-    s = getComm(host, port)
-    s.listen(5)
-    c, addr = s.accept()
-    print 'Got connection from', addr
+    i, o = getComm(host, portI, portO)
 
-    print c.recv(1024)
-    c.send("set_rgb")
-    c.send("100")
-    c.send("100")
-    c.send("0")
-    print c.recv(1024)
-    c.close                     # Close the socket when done
+    o.send("set_rgb, 100, 100, 0")
+    print i.recv(1024)
+    o.close                     # Close the socket when done
+    i.close
 
 testComm()
