@@ -1,7 +1,9 @@
 #http://www.tutorialspoint.com/python/python_networking.htm
 
+import sys
+sys.path.insert(0, './sphero/sphero')
 import socket               # Import socket module
-from ./sphero/sphero import core
+from core import *
 
 def getComm(host, portI, portO):
     i, o = socket.socket(), socket.socket()         # Create a socket object
@@ -18,7 +20,7 @@ def getComm(host, portI, portO):
     return c, o
 
 # Initialize Sphero
-robot = core.Sphero("/dev/rfcomm0")
+robot = Sphero("/dev/rfcomm0")
 robot.connect()
 
 # Initialize Socket
