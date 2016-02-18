@@ -1,3 +1,6 @@
 [submodule "sphero_ros"]
 	path = sphero_ros
 	url = https://github.com/mmwise/sphero_ros.git
+[submodule "sphero"]
+	path = sphero
+	url = https://github.com/ryanpeach/sphero.git

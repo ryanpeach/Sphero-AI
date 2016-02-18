@@ -1,7 +1,7 @@
 #http://www.tutorialspoint.com/python/python_networking.htm
 
 import socket               # Import socket module
-from sphero import *
+from ./sphero/sphero import core
 
 def getComm(host, portI, portO):
     i, o = socket.socket(), socket.socket()         # Create a socket object
@@ -34,12 +34,16 @@ Commands = {"get_rgb"    : lambda x,y,z: robot.get_rgb(),
             "set_speed"  : lambda x,y,z: robot.set_rotation_rate(int(x))}
 
 while True:                   # Runs forever
-    cmd = i.recv(1024)   # Receive the command
-    print(cmd)    
-    cmd,v1,v2,v3 = cmd.replace(' ','').split(',') 
-    print(cmd,v1,v2,v3)
+    try:
+        cmd = i.recv(1024)   # Receive the command
+        print(cmd)    
+        cmd,v1,v2,v3 = cmd.replace(' ','').split(',') 
+        print(cmd,v1,v2,v3)
 
-    out = Commands[cmd](v1,v2,v3)
-    o.send(str(out))
+        out = Commands[cmd](v1,v2,v3)
+        o.send(str(out))
+    except:
+        i.close(); o.close();
+        i, o = getComm(host,portI,portO)
 
 c.close()                # Close the connection
