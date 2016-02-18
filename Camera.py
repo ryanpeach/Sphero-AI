@@ -5,11 +5,18 @@ import colorsys
 import numpy as np
 
 class Camera:
-    def __init__(self, cap):
+    def __init__(self, cap = None):
+        if cap is None:
+            cap = cv2.VideoCapture(0)
         self.C = cap
         #self.S = robot
         #self.Color = self.S.get_rgb()
-
+        
+    def next(self):
+        ret, frame = self.C.read()
+        while not ret:
+            ret, frame = self.C.read()
+        return frame
     
     def filter(self, frame, color, colorRange):
         # Get color
@@ -30,7 +37,6 @@ class Camera:
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(frame,frame, mask= mask)
         return res
-
 
     def circles(self, frame):
         # Get the circle
