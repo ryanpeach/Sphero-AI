@@ -39,7 +39,7 @@ while True:                   # Runs forever
     cmd,v1,v2,v3 = cmd.replace(' ','').split(',') 
     print(cmd,v1,v2,v3)
 
-    Commands[cmd](v1,v2,v3)
-    o.send("Done!")
+    out = Commands[cmd](v1,v2,v3)
+    o.send(str(out))
 
 c.close()                # Close the connection
