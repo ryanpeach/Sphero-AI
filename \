@@ -35,13 +35,9 @@ Commands = {"get_rgb"    : lambda x,y,z: robot.get_rgb(),
 
 while True:                   # Runs forever
     cmd = i.recv(1024)   # Receive the command
-    print(cmd)
     v1  = i.recv(1024)   # Receive v1
-    print(v1)
     v2  = i.recv(1024)   # Receive v2
-    print(v2)
     v3  = i.recv(1024)   # Receive v3
-    print(v3)
 
     Commands[cmd](v1,v2,v3)
     o.send("Done!")
