@@ -3,15 +3,27 @@
 import socket               # Import socket module
 from sphero import *
 
+def getComm(host, port):
+    i, o = socket.socket(), socket.socket()         # Create a socket object
+    o.connect((host, port))
+    print o.recv(1024)
+
+    i.connect(('', port))
+    i.listen(5)
+    c, addr = i.accept()
+    print 'Got connection from', addr
+    c.send('Thank you for connecting')
+
+    return c, o
+
 # Initialize Sphero
 robot = core.Sphero("/dev/rfcomm0")
 robot.connect()
 
 # Initialize Socket
-net = socket.socket()         # Create a socket object
 host = ''                   # Get local machine name
 port = 12345                # Reserve a port for your service.
-net.bind((host, port))        # Bind to the port
+i, o = getComm(host,port)
 
 # Initialize Commands
 Commands = {"get_rgb"    : lambda x,y,z: robot.get_rgb(),
@@ -20,24 +32,13 @@ Commands = {"get_rgb"    : lambda x,y,z: robot.get_rgb(),
             "set_heading": lambda x,y,z: robot.set_heading(int(x)),
             "set_speed"  : lambda x,y,z: robot.set_rotation_rate(int(x))}
 
-net.listen(5)                 # Now wait for client connection.
 while True:                   # Runs forever
-    # Establish connection with client.
-    c, addr = net.accept()
-    print 'Got connection from', addr
-    c.send('Thank you for connecting')
+    cmd = i.recv(1024)   # Receive the command
+    v1  = i.recv(1024)   # Receive v1
+    v2  = i.recv(1024)   # Receive v2
+    v3  = i.recv(1024)   # Receive v3
 
-    while True:                # Runs until broken by error
-       try:
-           cmd = s.recv(1024)   # Receive the command
-           v1  = s.recv(1024)   # Receive v1
-           v2  = s.recv(1024)   # Receive v2
-           v3  = s.recv(1024)   # Receive v3
+    Commands[cmd](v1,v2,v3)
+    o.send("Done!")
 
-           Commands[cmd](v1,v2,v3)
-           c.send("Done!")
-
-       except:
-           break
-
-    c.close()                # Close the connection
+c.close()                # Close the connection

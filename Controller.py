@@ -107,23 +107,18 @@ def testFilter():
     s.close                     # Close the socket when done
 
 def testComm():
-    #cap = getVideo(host, vport)
-    cap = getVideo(host, vport)
+
     s = getComm(host, port)
-    print s.recv(1024)
+    s.listen(5)
+    c, addr = s.accept()
+    print 'Got connection from', addr
 
-    while(True):
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-
-        # Display the resulting frame
-        cv2.imshow("image",frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-           break
-
-    # When everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows()
-    s.close                     # Close the socket when done
+    print c.recv(1024)
+    c.send("set_rgb")
+    c.send("100")
+    c.send("100")
+    c.send("0")
+    print c.recv(1024)
+    c.close                     # Close the socket when done
 
 testComm()
