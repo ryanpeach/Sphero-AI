@@ -1,23 +1,30 @@
 import time
-from sphero import core
-from Camera import Camera
+from sphero_driver import Sphero
+from Camera import *
+import colorsys
 
-# Initialize Sphero
-s = core.Sphero("/dev/rfcomm0")
-s.connect()
+MAC = "68:86:E7:02:AB:C1"
+r, g, b = 255, 0, 0
+
+def connectSphero(target_addr):
+    """ Initializes Sphero """
+    s = Sphero(target_addr = target_addr)
+    s.connect()
+    con = False
+    while not con:
+        try:
+            con = s.connect()
+        except:
+            continue
+    return s
 
 # Initialize Camera
-CM1 = Camera(s)
+#s = connectSphero(MAC)
+#c = s.set_rgb(r,g,b,1,1)
+h,s,v = colorsys.rgb_to_hsv(r,g,b)
+print(h,s,v)
+testFilter()
 
-while True:
-
-    CM1.capture((40,40,40))
-
-    k = cv2.waitKey(5) & 0xFF
-    if k == 27:
-        break
-
-cv2.destroyAllWindows()
 
 #s.set_heading(0)
 #s.roll(speed,a)
