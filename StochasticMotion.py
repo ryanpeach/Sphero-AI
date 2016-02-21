@@ -23,6 +23,17 @@
 # is sufficiently close to the correct answer
 # (within 0.001), you will be marked as correct.
 
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+map = Image.open("Map.png")
+M = np.array(map)
+M = M[:,:,3]
+t = np.vectorize(lambda x: 255 if x>0 else 0)
+grid = t(M)
+
 delta = [[-1, 0 ], # go up
          [ 0, -1], # go left
          [ 1, 0 ], # go down
@@ -52,7 +63,7 @@ def stochastic_value(grid,goal,cost_step,collision_cost,success_prob):
         failure_prob = (1.0 - success_prob)/2.0  # Probability(stepping left) = prob(stepping right) = failure_prob
         x,y = loc
         if tuple(loc) == tuple(goal):
-            return 0, '*', M[x][y] != 0
+            return 0, [0,0], M[x][y] != 0
         else:
             N = [l2 for l2 in run(loc)]
             vN, eN = [l2 for l2 in N if valid(l2,grid)], [l2 for l2 in N if not valid(l2,grid)]
@@ -61,7 +72,9 @@ def stochastic_value(grid,goal,cost_step,collision_cost,success_prob):
                 L, R     = rotate(Scores,1), rotate(Scores,-1)
                 V = [Scores[n] * success_prob + L[n] * failure_prob + R[n] * failure_prob + cost_step for n in range(len(Scores))]
                 v = min(V)
-                p = delta_name[V.index(v)]
+                x2, y2 = N[V.index(v)]
+                dx, dy = x2-x, y2-y
+                p = [dy, dx]
 
                 if v < M[x][y]:
                     return v,p,True
@@ -71,11 +84,11 @@ def stochastic_value(grid,goal,cost_step,collision_cost,success_prob):
                 return M[x][y],P[x][y],False
     
     value = [[collision_cost for col in range(len(grid[0]))] for row in range(len(grid))]
-    policy = [[' ' for col in range(len(grid[0]))] for row in range(len(grid))]
+    policy = [[[0,0] for col in range(len(grid[0]))] for row in range(len(grid))]
     
     changed = True
     n = 0
-    while changed and n < 2000:
+    while changed:
         n += 1
         changed = False
         for x in range(len(grid)):
@@ -95,21 +108,26 @@ def stochastic_value(grid,goal,cost_step,collision_cost,success_prob):
 #  Use the code below to test your solution
 # ---------------------------------------------
 
-grid = [[0, 0, 0, 1, 0, 0, 0],
-        [0, 1, 0, 0, 0, 1, 0],
-        [0, 1, 1, 0, 1, 1, 0],
-        [0, 1, 1, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0, 0, 0]]
-goal = [0, 6] # Goal is in top right corner
+#grid = [[0, 0, 0, 0],
+#        [0, 0, 0, 0],
+#        [0, 0, 0, 0],
+#        [0, 1, 1, 0]]
+goal = [30, 30] # Goal is in top right corner
 cost_step = 1
-collision_cost = 100
+collision_cost = 255
 success_prob = 0.8
-
+print(grid)
 value,policy = stochastic_value(grid,goal,cost_step,collision_cost,success_prob)
-for row in value:
-    print row
-for row in policy:
-    print row
+#for row in value:
+#    print row
+#for row in policy:
+#    print row
+
+policy = np.array(policy)
+print(policy)
+#X, Y = np.meshgrid(M.shape)
+plt.quiver(policy[:,:,0],policy[:,:,1])
+plt.show()
 
 # Expected outputs:
 #
